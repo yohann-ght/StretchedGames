@@ -4,14 +4,14 @@ import ctypes
 from winotify import Notification
 
 toast = Notification(
-    app_id="Fortnite Resolution Switcher",
-    title="Fortnite Resolution Switcher",
+    app_id="Resolution Switcher",
+    title="Resolution Switcher",
     msg="Le programme est démarré et fonctionne en arrière-plan."
 )
 
 toast.show()
 
-FortnitePlaying = False
+GamePlaying = False
 old_resolution = None
 
 
@@ -87,18 +87,22 @@ def change_resolution(width=1440, height=1080):
 while True:
 
     find = False
+    Games = [
+        "FortniteClient-Win64-Shipping.exe",
+        "Deceit2Game-Win64-Shipping.exe"
+    ]
 
     for process in psutil.process_iter(["name"]):
         try:
-            if process.info["name"] == "FortniteClient-Win64-Shipping.exe":
+            if process.info["name"] in Games:
                 find = True
                 break
         except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
             pass
 
-    if find and not FortnitePlaying:
+    if find and not GamePlaying:
 
-        print("Fortnite vient de se lancer !")
+        print(f"{process.info['name']}  vient de se lancer !")
 
         old_resolution = get_current_resolution()
 
@@ -106,17 +110,17 @@ while True:
 
         change_resolution()
 
-        FortnitePlaying = True
+        GamePlaying = True
 
-    elif not find and FortnitePlaying:
+    elif not find and GamePlaying:
 
-        print("Fortnite vient de se fermer !")
+        print(f"{process.info['name']} vient de se fermer !")
 
         change_resolution(
             old_resolution[0],
             old_resolution[1]
         )
 
-        FortnitePlaying = False
+        GamePlaying = False
 
     time.sleep(2)
